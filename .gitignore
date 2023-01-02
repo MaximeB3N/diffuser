@@ -1,6 +1,20 @@
 bin/
 logs/
 wandb/
+/home/maximebonnin/.cache
+/home/maximebonnin/.config
+/home/maximebonnin/.conda
+/home/maximebonnin/.d4rl
+/home/maximebonnin/.mujoco
+/home/maximebonnin/.nv
+/home/maximebonnin/.ssh
+/home/maximebonnin/.vscode-server
+/home/maximebonnin/.miniconda3
+/home/maximebonnin/.bash_history
+/home/maximebonnin/.bash_logout
+/home/maximebonnin/.bashrc
+/home/maximebonnin/.profile
+
 
 *.sif
 
