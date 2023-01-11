@@ -17,13 +17,14 @@ class SequenceDataset(torch.utils.data.Dataset):
 
     def __init__(self, env='hopper-medium-replay', horizon=64,
         normalizer='LimitsNormalizer', preprocess_fns=[], max_path_length=1000,
-        max_n_episodes=10000, termination_penalty=0, use_padding=True, seed=None):
+        max_n_episodes=10000, termination_penalty=0, use_padding=True, seed=None, action_only=True):
         self.preprocess_fn = get_preprocess_fn(preprocess_fns, env)
         self.env = env = load_environment(env)
         self.env.seed(seed)
         self.horizon = horizon
         self.max_path_length = max_path_length
         self.use_padding = use_padding
+        self.action_only = action_only
         itr = sequence_dataset(env, self.preprocess_fn)
 
         fields = ReplayBuffer(max_n_episodes, max_path_length, termination_penalty)
@@ -82,11 +83,20 @@ class SequenceDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx, eps=1e-4):
         path_ind, start, end = self.indices[idx]
 
-        observations = self.fields.normed_observations[path_ind, start:end]
         actions = self.fields.normed_actions[path_ind, start:end]
 
+        observations = self.fields.normed_observations[path_ind, start:end]
+    
+
         conditions = self.get_conditions(observations)
-        trajectories = np.concatenate([actions, observations], axis=-1)
+
+        if not self.action_only:
+            trajectories = np.concatenate([actions, observations], axis=-1)
+
+        else:
+            trajectories = actions
+            # unsqueeze to make it 3D
+            trajectories = np.expand_dims(trajectories, axis=-1)
         batch = Batch(trajectories, conditions)
         return batch
 
